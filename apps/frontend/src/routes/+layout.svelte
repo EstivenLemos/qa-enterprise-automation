@@ -1,11 +1,17 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
 
-	let { children } = $props();
+    import '../app.css';
+
+    import Navbar
+    from '$lib/components/layout/Navbar.svelte';
+
 </script>
 
-<svelte:head>
-	<link rel="icon" href={favicon} />
-</svelte:head>
+<Navbar />
 
-{@render children()}
+<main
+class="container mx-auto p-6">
+
+    <slot />
+
+</main>

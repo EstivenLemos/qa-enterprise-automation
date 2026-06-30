@@ -1,0 +1,82 @@
+# ======================================
+# GENERAL
+# ======================================
+
+.DS_Store
+Thumbs.db
+*.log
+
+# ======================================
+# ENVIRONMENT VARIABLES
+# ======================================
+
+.env
+.env.*
+!.env.example
+
+# ======================================
+# NODE / PNPM / SVELTEKIT
+# ======================================
+
+node_modules/
+.pnpm-store/
+
+apps/frontend/node_modules/
+
+apps/frontend/.svelte-kit/
+apps/frontend/build/
+apps/frontend/dist/
+
+apps/frontend/.vite/
+
+# Testing (los usaremos más adelante)
+apps/frontend/playwright-report/
+apps/frontend/test-results/
+apps/frontend/coverage/
+
+# ======================================
+# JAVA / SPRING BOOT
+# ======================================
+
+*.class
+*.jar
+*.war
+*.ear
+
+target/
+
+.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# NetBeans
+nbproject/private/
+
+# ======================================
+# POSTGRESQL
+# ======================================
+
+*.sql.bak
+
+# ======================================
+# DOCKER
+# ======================================
+
+docker-data/
+postgres-data/
+
+# ======================================
+# OS FILES
+# ======================================
+
+Desktop.ini

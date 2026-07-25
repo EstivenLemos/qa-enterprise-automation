@@ -73,12 +73,17 @@ El proyecto se construirá progresivamente, incorporando buenas prácticas de ar
 qa-enterprise-automation/
 
 ├── apps/
-│   ├── frontend/     # SvelteKit
-│   └── backend/      # Spring Boot
+│   ├── frontend/     # SvelteKit (Dockerfile propio)
+│   └── backend/      # Spring Boot (Dockerfile propio)
 │
 ├── docs/             # Documentación del proyecto
 │
-└── docker/           # Configuraciones de contenedores
+├── docker/
+│   ├── jenkins/      # Imagen custom de Jenkins (Maven + Docker CLI + plugins.txt)
+│   └── README.md     # Cómo levantar el stack y configurar el Pipeline job
+│
+├── docker-compose.yml  # Postgres + backend + frontend + Jenkins
+└── Jenkinsfile         # Pipeline de CI/CD
 ```
 
 ---
@@ -125,25 +130,25 @@ User
 * Catálogo de productos
 * Carrito de compras
 
-### Sprint 5
+### Sprint 5 — ✅ Completado
 
 * Spring Security
-* JWT
-* Roles y permisos
+* JWT (access + refresh token)
+* Roles y permisos (USER / ADMIN)
 * Refresh Tokens
 
-### Sprint 6
+### Sprint 6 — ✅ Completado
 
-* Docker
-* Docker Compose
+* Docker (backend, frontend)
+* Docker Compose (Postgres + backend + frontend + Jenkins)
 * Variables de entorno
 * Configuración para despliegue
 
-### Sprint 7
+### Sprint 7 — ✅ Completado
 
-* Pruebas unitarias
-* Pruebas de integración
-* Cobertura de código
+* Pruebas unitarias (JUnit 5 + Mockito) en la capa de servicios
+* Pruebas de integración (Testcontainers + `@SpringBootTest`) en la capa de controllers
+* Cobertura de código con JaCoCo
 
 ### Sprint 8
 
@@ -158,12 +163,17 @@ User
 * Page Object Model
 * Screenplay Pattern
 
+### CI/CD — ✅ Completado (adelantado respecto al roadmap original)
+
+* Jenkins (vía Docker Compose, imagen custom con Maven + Docker CLI)
+* `Jenkinsfile` versionado en el repo: build + test backend, reportes JUnit/JaCoCo, build+check frontend, build de imágenes Docker
+* Nota: se optó por Jenkins en vez de GitHub Actions (mencionado originalmente en el Sprint 10) por decisión explícita del autor del proyecto
+
 ### Sprint 10
 
 * Performance Testing con k6
 * Security Testing con OWASP ZAP
 * SonarQube
-* GitHub Actions
 * DevSecOps
 
 ### Sprint 11

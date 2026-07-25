@@ -1,7 +1,10 @@
 package com.smartstore.backend.services;
 
+import com.smartstore.backend.dto.category.CategoryRequestDTO;
 import com.smartstore.backend.dto.category.CategoryResponseDTO;
 import com.smartstore.backend.entities.Category;
+import com.smartstore.backend.exceptions.ResourceNotFoundException;
+import com.smartstore.backend.mapper.CategoryMapper;
 import com.smartstore.backend.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,39 +17,45 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    private final CategoryMapper categoryMapper;
+
     public List<CategoryResponseDTO> findAll() {
 
         return categoryRepository
                 .findAll()
                 .stream()
-                .map(this::toDTO)
+                .map(categoryMapper::toDTO)
                 .toList();
 
     }
 
     public CategoryResponseDTO findById(Long id) {
 
-        Category category =
-                categoryRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Category not found"
-                                )
-                        );
+        Category category = findEntityById(id);
 
-        return toDTO(category);
+        return categoryMapper.toDTO(category);
 
     }
 
-    private CategoryResponseDTO toDTO(
-            Category category
-    ) {
+    public CategoryResponseDTO create(CategoryRequestDTO dto) {
 
-        return new CategoryResponseDTO(
-                category.getId(),
-                category.getName()
-        );
+        Category category = categoryMapper.toEntity(dto);
+
+        categoryRepository.save(category);
+
+        return categoryMapper.toDTO(category);
+
+    }
+
+    private Category findEntityById(Long id) {
+
+        return categoryRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Categoría no encontrada con id: " + id
+                        )
+                );
 
     }
 

@@ -1,6 +1,7 @@
 package com.smartstore.backend.dto.product;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record ProductResponseDTO(
         Long id,
@@ -8,6 +9,8 @@ public record ProductResponseDTO(
         String description,
         BigDecimal price,
         Integer stock,
-        String category
+        String category,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 }

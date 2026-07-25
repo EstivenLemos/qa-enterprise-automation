@@ -4,6 +4,8 @@ import com.smartstore.backend.dto.product.ProductRequestDTO;
 import com.smartstore.backend.dto.product.ProductResponseDTO;
 import com.smartstore.backend.entities.Category;
 import com.smartstore.backend.entities.Product;
+import com.smartstore.backend.exceptions.ResourceNotFoundException;
+import com.smartstore.backend.mapper.ProductMapper;
 import com.smartstore.backend.repositories.CategoryRepository;
 import com.smartstore.backend.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,22 +21,22 @@ public class ProductService {
 
     private final CategoryRepository categoryRepository;
 
+    private final ProductMapper productMapper;
+
     public List<ProductResponseDTO> findAll() {
 
         return productRepository.findAll()
                 .stream()
-                .map(this::toDTO)
+                .map(productMapper::toDTO)
                 .toList();
 
     }
 
     public ProductResponseDTO findById(Long id) {
 
-        Product product =
-                productRepository.findById(id)
-                        .orElseThrow();
+        Product product = findEntityById(id);
 
-        return toDTO(product);
+        return productMapper.toDTO(product);
 
     }
 
@@ -42,38 +44,31 @@ public class ProductService {
             ProductRequestDTO dto
     ) {
 
-        Category category =
-                categoryRepository.findById(
-                        dto.categoryId()
-                ).orElseThrow();
+        Category category = categoryRepository.findById(
+                dto.categoryId()
+        ).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Categoría no encontrada con id: " + dto.categoryId()
+                )
+        );
 
-        Product product =
-                Product.builder()
-                        .name(dto.name())
-                        .description(dto.description())
-                        .price(dto.price())
-                        .stock(dto.stock())
-                        .category(category)
-                        .build();
+        Product product = productMapper.toEntity(dto);
+        product.setCategory(category);
 
         productRepository.save(product);
 
-        return toDTO(product);
+        return productMapper.toDTO(product);
 
     }
 
-    private ProductResponseDTO toDTO(
-            Product product
-    ) {
+    private Product findEntityById(Long id) {
 
-        return new ProductResponseDTO(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getStock(),
-                product.getCategory().getName()
-        );
+        return productRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Producto no encontrado con id: " + id
+                        )
+                );
 
     }
 

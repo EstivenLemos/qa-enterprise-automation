@@ -1,0 +1,8 @@
+git:latest
+workflow-aggregator:latest
+docker-workflow:latest
+junit:latest
+htmlpublisher:latest
+pipeline-utility-steps:latest
+pipeline-stage-view:latest
+allure-jenkins-plugin:latest

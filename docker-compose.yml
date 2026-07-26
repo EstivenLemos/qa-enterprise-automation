@@ -1,0 +1,67 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: smartstore-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-smartstore}
+      POSTGRES_USER: ${DB_USERNAME:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin123}
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-admin} -d ${DB_NAME:-smartstore}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./apps/backend
+    container_name: smartstore-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-smartstore}
+      DB_USERNAME: ${DB_USERNAME:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      JWT_SECRET: ${JWT_SECRET:-CAMBIAR_POR_UNA_LLAVE_MUY_LARGA_DE_AL_MENOS_32_BYTES_PARA_HS256}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-900000}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-604800000}
+      ADMIN_SEED_EMAIL: ${ADMIN_SEED_EMAIL:-admin@smartstore.com}
+      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-Admin123!}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      args:
+        PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8080/api}
+    container_name: smartstore-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+  jenkins:
+    build:
+      context: ./docker/jenkins
+    container_name: smartstore-jenkins
+    user: root
+    privileged: true
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  postgres_data:
+  jenkins_data:
